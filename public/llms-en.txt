@@ -1,0 +1,66 @@
+# ops-console
+
+> The internal operations console of the Tier 0 product family: agents execute
+> upstream, humans sign off on the holds. ops-console is the post-login workbench
+> where internal operations run. It is not merchant-facing, has no open
+> registration, and is not a SaaS.
+
+- Site: https://ops-console.bayjf.com (English) · https://ops-console.bayjf.com/zh/ (简体中文)
+- Workbench source (the actual post-login app): https://github.com/bayernjf/ops-console
+- Family overview: https://tier0.bayjf.com
+- Status: M8 local development is complete and every local verification is green
+  (Vitest 40/40, astro check 0 errors, verify-batch1 29/0, notify path OK,
+  verify-batch2 21/0). GATE-M8 has NOT passed. The site is never claimed as live.
+
+## What the workbench does
+
+1. **Minimal session, no user table** — a single environment password plus an
+   HMAC-signed cookie; two roles (owner / operator); no account table, no
+   registration, no password-reset flow; zero upstream keys in the browser.
+2. **Approval workbench (D1–D3 queue)** — held items queue as cards; approve or
+   reject; results flow back consistently through the zeus `/approval` endpoint,
+   the same channel agents wait on; the queue refreshes on a 20s poll.
+3. **Read-only business dashboard** — reuses the commerce dashboard: orders,
+   refunds, content and net amount; no cost data. The console reads; upstream
+   services decide and write.
+4. **Webhook card notifications** — every hold arrives as a webhook card in the
+   IM client carrying an approval deep link; IM only notifies (Feishu / WeChat /
+   email) — approve and reject never happen inside the IM client.
+5. **Controlled, role-gated writes** — D3 listing changes are owner-only; D2
+   refunds are open to both roles; manual stock adjustments where the flow
+   allows; every write executes through commerce endpoints.
+
+## Technical form
+
+Single-process Astro 7 SSR (node standalone) with React 19 interactive islands.
+One process = one deployment unit. Upstream bearer tokens live server-side only.
+Shutting the console down does not affect the underlying zeus and commerce APIs —
+the console is a lens on upstream services, not a dependency of them.
+
+## Design principles
+
+- **One process = one deployment unit**: one config, one restart, one thing to
+  reason about.
+- **Tokens stay server-side**: the browser holds only an HMAC cookie; there is no
+  path for the client to call zeus or commerce directly.
+- **Blast radius is the UI**: the workbench must never become a system the
+  operations loop depends on.
+
+## Honest status (as of 2026-10-24)
+
+- M8 local build: complete and green — Vitest 40/40, astro check 0 errors,
+  verify-batch1 29/0, notify OK, verify-batch2 21/0.
+- GATE-M8 live acceptance: NOT passed. Remaining external items:
+  - 7 consecutive days of live operations;
+  - real webhook URLs (Feishu / WeChat / email);
+  - production authentication (Cloudflare Access / GitHub OIDC);
+  - live deployment: domain, TLS and real shop connection (depends on M6).
+- Nothing here is claimed as live: no real shop connection, no production
+  webhooks, no production authentication. The planned URL
+  https://ops-console.bayjf.com is a placeholder until GATE-M8 passes.
+
+## Explicitly not in scope
+
+- No merchant-facing surface, no open registration, no sign-up.
+- No SaaS, no multi-tenancy, no billing, no payments.
+- No operational data, no cost figures — this facade is a static public page.

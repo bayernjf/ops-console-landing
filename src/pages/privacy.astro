@@ -1,0 +1,102 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Hud from "../components/Hud.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_NAME, SOCIAL } from "../consts";
+
+const title = `Privacy Policy | ${SITE_NAME}`;
+const description = `Privacy Policy of ${SITE_NAME}: this static public facade collects no visitor data.`;
+---
+
+<Layout title={title} description={description}>
+  <Hud />
+  <main class="doc">
+    <div class="shell">
+      <article class="panel panel--riveted doc__panel">
+        <p class="stencil">privacy policy</p>
+        <h1>Privacy Policy</h1>
+        <p class="doc__stamp">Last updated: October 24, 2026</p>
+
+        <div class="doc__body">
+          <section>
+            <h2>1. Overview</h2>
+            <p>
+              {SITE_NAME} (the "Site") is the public facade of the Tier 0 family's
+              internal operations console — a static, informational page. We respect and
+              protect the privacy of our visitors. This policy explains what information
+              this Site does and does not handle. By using the Site you agree to the terms
+              of this policy.
+            </p>
+          </section>
+
+          <section>
+            <h2>2. Information We Handle</h2>
+            <ul>
+              <li>
+                The Site is fully static, offers no account registration and contains no
+                form of any kind. It does not collect personally identifiable information,
+                no cookies for tracking, and no analytics scripts.
+              </li>
+              <li>
+                The workbench described here is an internal post-login application, not a
+                hosted service. This Site never sees any operations data, orders, refunds,
+                decisions, credentials or API keys.
+              </li>
+              <li>
+                The hosting platform (Cloudflare Pages) may record basic access logs (IP,
+                User-Agent, etc.) under its own policies, outside our control.
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>3. Status Figures</h2>
+            <p>
+              Test counts, status strings, milestone names and the acceptance board shown
+              on this Site are dated build snapshots (as stated next to the figures), not
+              live feeds, not real transactions and not operational data.
+            </p>
+          </section>
+
+          <section>
+            <h2>4. Cookies &amp; Local Storage</h2>
+            <p>
+              This Site uses no cookies and no localStorage. The workbench application it
+              describes does use an HMAC-signed session cookie, but that lives only inside
+              the internal workbench and is unrelated to this public page.
+            </p>
+          </section>
+
+          <section>
+            <h2>5. Third-Party Links</h2>
+            <p>
+              The Site links to the workbench's GitHub repository and the Tier 0 family
+              overview. Their privacy practices are not covered by this policy; please
+              refer to their own policies.
+            </p>
+          </section>
+
+          <section>
+            <h2>6. Changes</h2>
+            <p>
+              This policy may be updated as the effort evolves. Changes will be posted on
+              this page with an updated revision date.
+            </p>
+          </section>
+
+          <section>
+            <h2>7. Contact</h2>
+            <p>
+              Questions about this policy can be raised via Issues on the
+              <a href={SOCIAL.github}>workbench's GitHub repository</a>. There is no
+              general contact address for this internal tool.
+            </p>
+          </section>
+        </div>
+
+        <a class="btn btn--ghost doc__back" href="/">Back to console</a>
+      </article>
+    </div>
+  </main>
+  <Footer />
+</Layout>

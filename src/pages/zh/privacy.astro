@@ -1,0 +1,94 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Hud from "../../components/Hud.astro";
+import Footer from "../../components/Footer.astro";
+import { SITE_NAME, SOCIAL } from "../../consts";
+
+const title = `隐私政策 | ${SITE_NAME}`;
+const description = `${SITE_NAME} 隐私政策：这个纯静态公开门面不收集任何访问者数据。`;
+---
+
+<Layout title={title} description={description}>
+  <Hud />
+  <main class="doc">
+    <div class="shell">
+      <article class="panel panel--riveted doc__panel">
+        <p class="stencil">隐私政策</p>
+        <h1>隐私政策</h1>
+        <p class="doc__stamp">最后更新：2026 年 10 月 24 日</p>
+
+        <div class="doc__body">
+          <section>
+            <h2>1. 概述</h2>
+            <p>
+              {SITE_NAME}（以下称「本站」）是 Tier 0 产品族内部运营控制台的公开门面——
+              一个静态介绍页。我们尊重并保护访问者的隐私。本政策说明本站处理什么、
+              不处理什么。使用本站即表示你同意本政策的条款。
+            </p>
+          </section>
+
+          <section>
+            <h2>2. 我们处理的信息</h2>
+            <ul>
+              <li>
+                本站为纯静态站点，不提供账号注册，也没有任何形式的表单；不收集可识别
+                个人身份的信息，不使用追踪 cookie，也没有任何统计脚本。
+              </li>
+              <li>
+                本站介绍的工作台是登录后的内部应用，而非托管服务。本站不会接触任何
+                运营数据、订单、退款、决策记录、凭据或 API 密钥。
+              </li>
+              <li>
+                托管平台（Cloudflare Pages）可能在其自身政策下记录基本访问日志（IP、
+                User-Agent 等），这部分不在我们控制范围内。
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>3. 状态数字</h2>
+            <p>
+              本站展示的测试数、状态串、里程碑名称与验收板，均为带日期的构建快照
+              （日期已在数字旁注明），不是实时数据、不是真实交易，也不是运营数据。
+            </p>
+          </section>
+
+          <section>
+            <h2>4. Cookie 与本地存储</h2>
+            <p>
+              本站不使用 cookie，也不使用 localStorage。本站介绍的工作台本身会使用
+              HMAC 签名的会话 Cookie，但那只存在于内部工作台里，与本公开页面无关。
+            </p>
+          </section>
+
+          <section>
+            <h2>5. 第三方链接</h2>
+            <p>
+              本站包含指向工作台 GitHub 仓库与 Tier 0 产品族总览的链接。它们的隐私
+              做法不受本政策约束，请参阅其自身政策。
+            </p>
+          </section>
+
+          <section>
+            <h2>6. 变更</h2>
+            <p>
+              本政策可能随工程演进而更新。变更将在本页发布并更新修订日期。
+            </p>
+          </section>
+
+          <section>
+            <h2>7. 联系方式</h2>
+            <p>
+              关于本政策的问题，可在
+              <a href={SOCIAL.github}>工作台的 GitHub 仓库</a>通过 Issues 提出。
+              本内部工具不设通用联系地址。
+            </p>
+          </section>
+        </div>
+
+        <a class="btn btn--ghost doc__back" href="/zh/">回控制台</a>
+      </article>
+    </div>
+  </main>
+  <Footer />
+</Layout>

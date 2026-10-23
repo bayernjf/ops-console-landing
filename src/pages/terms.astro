@@ -1,0 +1,119 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Hud from "../components/Hud.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_NAME, SOCIAL } from "../consts";
+
+const title = `Terms of Service | ${SITE_NAME}`;
+const description = `Terms of Service of ${SITE_NAME}: the agreement covering use of this static facade site.`;
+---
+
+<Layout title={title} description={description}>
+  <Hud />
+  <main class="doc">
+    <div class="shell">
+      <article class="panel panel--riveted doc__panel">
+        <p class="stencil">terms of service</p>
+        <h1>Terms of Service</h1>
+        <p class="doc__stamp">Last updated: October 24, 2026</p>
+
+        <div class="doc__body">
+          <section>
+            <h2>1. Acceptance</h2>
+            <p>
+              Welcome to {SITE_NAME} (the "Site"). By accessing or using the Site you agree
+              to be bound by these terms. If you do not agree, please do not use the Site.
+            </p>
+          </section>
+
+          <section>
+            <h2>2. Site Content</h2>
+            <p>
+              Content on the Site is provided "as is" for introducing the internal operations
+              console and its build-in-public status. We strive for accuracy but make no
+              express or implied warranties regarding completeness or timeliness.
+            </p>
+          </section>
+
+          <section>
+            <h2>3. Availability and Honest Status</h2>
+            <p>
+              As of the revision date, M8 local development is complete and every local
+              verification is green (Vitest 40/40, astro check 0 errors, verify-batch1
+              29/0, notify OK, verify-batch2 21/0), but GATE-M8 has not passed. The workbench
+              is not live: there is no 7-day live operation record, no real webhook URL, no
+              production authentication, and no production deployment or real shop
+              connection (the last depends on M6). Nothing on this Site constitutes a
+              commitment to ship a specific feature or on a specific date.
+            </p>
+          </section>
+
+          <section>
+            <h2>4. Internal Tool</h2>
+            <p>
+              The workbench is an internal post-login application with no open registration
+              and no merchant-facing surface. This Site is not a SaaS, offers no
+              multi-tenancy, billing or payments, and grants no access to the workbench
+              itself.
+            </p>
+          </section>
+
+          <section>
+            <h2>5. Illustrative Figures</h2>
+            <p>
+              Test counts, identifiers, status strings and the acceptance board shown on the
+              Site are dated build snapshots used to document the engineering state. They
+              are not real transactions and do not represent operational data.
+            </p>
+          </section>
+
+          <section>
+            <h2>6. Intellectual Property</h2>
+            <p>
+              The Site's copy, design and branding belong to the project team and may not
+              be used commercially without permission. The software and its source code are
+              governed by the license declared in the workbench's repository.
+            </p>
+          </section>
+
+          <section>
+            <h2>7. Acceptable Use</h2>
+            <p>
+              Do not use the Site in ways that could harm or disrupt its operation or
+              infringe on others' rights, including malicious scraping, injection attacks,
+              or impersonation of the Site.
+            </p>
+          </section>
+
+          <section>
+            <h2>8. Limitation of Liability</h2>
+            <p>
+              To the maximum extent permitted by law, the Site is not liable for any
+              indirect, incidental, or consequential damages arising from use of or inability
+              to use its content.
+            </p>
+          </section>
+
+          <section>
+            <h2>9. Changes</h2>
+            <p>
+              These terms may be updated; changes will be posted on this page. Continued use
+              of the Site constitutes acceptance of the updated terms.
+            </p>
+          </section>
+
+          <section>
+            <h2>10. Contact</h2>
+            <p>
+              Questions about these terms can be raised via Issues on the
+              <a href={SOCIAL.github}>workbench's GitHub repository</a>.
+            </p>
+          </section>
+        </div>
+
+        <a class="btn btn--ghost doc__back" href="/">Back to console</a>
+      </article>
+    </div>
+  </main>
+  <Footer />
+</Layout>

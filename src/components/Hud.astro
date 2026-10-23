@@ -1,0 +1,96 @@
+---
+// Hud — fixed top status strip. Machine readouts (env password, owner/operator,
+// 20s poll) are fixed identifiers; the labels and status line are localized.
+import { useTranslations, getLangFromUrl } from "../i18n";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+---
+
+<div class="hud" role="banner">
+  <div class="shell hud__inner">
+    <div class="hud__cell">
+      <span class="hud__k">{t("hud.session")}</span>
+      <span class="hud__v"><span class="led" data-c="data" />1× ENV PASSWORD</span>
+    </div>
+    <div class="hud__cell">
+      <span class="hud__k">{t("hud.roles")}</span>
+      <span class="hud__v"><span class="led" data-c="data" />OWNER / OPERATOR</span>
+    </div>
+    <div class="hud__cell">
+      <span class="hud__k">{t("hud.poll")}</span>
+      <span class="hud__v"><span class="led" data-c="power" />20s</span>
+    </div>
+    <div class="hud__cell hud__cell--status">
+      <span class="hud__k">{t("hud.status")}</span>
+      <span class="hud__clock">
+        <span class="hud__clock-dot" data-c="warn" />
+        <span class="hud__clock-t" id="res-clock">--:--:--</span>
+        <span class="hud__clock-z">LOCAL</span>
+      </span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hud {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    border-bottom: 1px solid var(--steel-700);
+    background: rgba(6, 9, 11, 0.88);
+    backdrop-filter: blur(8px);
+  }
+  .hud__inner {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    height: 34px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .hud__inner::-webkit-scrollbar { display: none; }
+  .hud__cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+    font-family: var(--mono);
+  }
+  .hud__cell--status { margin-left: auto; }
+  .hud__k {
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .hud__v {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .hud__clock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--ink-dim);
+  }
+  .hud__clock-t { letter-spacing: 0.08em; }
+  .hud__clock-z {
+    font-size: 9px;
+    color: var(--ink-faint);
+    letter-spacing: 0.12em;
+  }
+  .hud__clock-dot { width: 5px; height: 5px; }
+
+  @media (max-width: 720px) {
+    .hud__inner { gap: 16px; }
+    .hud__cell:nth-child(2) { display: none; }
+  }
+</style>

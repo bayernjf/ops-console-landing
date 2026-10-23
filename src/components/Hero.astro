@@ -1,0 +1,353 @@
+---
+// Hero — what ops-console is, the one-line positioning, and the approval
+// flow panel. Both CTAs are real links: the primary opens the workbench repo,
+// the secondary anchors to the capabilities section. No mailto, no waitlist —
+// this is an internal tool facade.
+import Logo from "./Logo.astro";
+import FlowDiagram from "./FlowDiagram.astro";
+import { useTranslations, getLangFromUrl, getAltLangPath, localizePath } from "../i18n";
+import { SOCIAL } from "../consts";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const altPath = getAltLangPath(Astro.url, lang);
+
+const nav = [
+  { href: "#capabilities", key: "nav.capabilities" },
+  { href: "#principles", key: "nav.principles" },
+  { href: "#status", key: "nav.status" },
+] as const;
+
+const legend = [
+  { c: "data", label: t("hero.map.legend.notify") },
+  { c: "data", label: t("hero.map.legend.link") },
+  { c: "power", label: t("hero.map.legend.human") },
+  { c: "ok", label: t("hero.map.legend.upstream") },
+] as const;
+---
+
+<header class="nav">
+  <div class="shell nav__inner">
+    <a class="nav__brand" href={localizePath("/", lang)}>
+      <Logo />
+      <span class="nav__wordmark">
+        OPS&nbsp;CONSOLE
+        <small class="nav__wordmark-tag">tier 0 · internal workbench</small>
+      </span>
+    </a>
+    <nav class="nav__links">
+      {nav.map((n) => <a href={n.href}>{t(n.key)}</a>)}
+    </nav>
+    <div class="nav__ext">
+      <a class="nav__lang" href={altPath} hreflang={lang === "zh" ? "en" : "zh-CN"}>
+        {t("nav.langSwitch")}
+      </a>
+    </div>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="shell hero__grid">
+    <div class="hero__copy">
+      <span class="badge">
+        <span class="badge__led" />
+        {t("hero.badge")}
+      </span>
+      <h1 class="hero__title">
+        <span class="hero__title-line">{t("hero.title.line1")}</span>
+        {t("hero.title.pre")}<span class="hero__title-accent">{t("hero.title.accent")}</span>{t("hero.title.post")}
+      </h1>
+      <p class="hero__sub">{t("hero.sub")}</p>
+      <div class="hero__actions">
+        <a class="btn" href={SOCIAL.github} target="_blank" rel="noopener noreferrer">
+          {t("hero.ctaPrimary")}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn--ghost" href="#capabilities">{t("hero.ctaSecondary")}</a>
+      </div>
+      <ul class="hero__meta">
+        <li><span class="readout">5</span><span class="hero__meta-k">{t("hero.meta.caps")}</span></li>
+        <li><span class="readout">2</span><span class="hero__meta-k">{t("hero.meta.roles")}</span></li>
+        <li><span class="readout">20s</span><span class="hero__meta-k">{t("hero.meta.poll")}</span></li>
+      </ul>
+    </div>
+
+    <div class="panel panel--riveted hero__map">
+      <div class="panel__bar">
+        <span>{t("hero.map.bar")}</span>
+        <span class="readout">{t("hero.map.status")}</span>
+      </div>
+      <div class="hero__map-body">
+        <FlowDiagram />
+      </div>
+      <div class="hero__map-foot">
+        <ul class="hero__legend">
+          {legend.map((l) => (
+            <li>
+              <i class="hero__legend-i" data-c={l.c} />
+              <span>{l.label}</span>
+            </li>
+          ))}
+        </ul>
+        <span class="hero__map-note">{t("hero.map.note")}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .nav {
+    position: fixed;
+    top: 34px;
+    left: 0;
+    right: 0;
+    z-index: 55;
+    border-bottom: 1px solid rgba(86, 107, 120, 0.35);
+    background: rgba(6, 9, 11, 0.78);
+    backdrop-filter: blur(8px);
+  }
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    height: 58px;
+  }
+  .nav__brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    flex: none;
+  }
+  .nav__wordmark {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: var(--ink);
+    line-height: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .nav__wordmark-tag {
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+  }
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--ink-dim);
+  }
+  .nav__links a {
+    position: relative;
+    padding: 4px 0;
+    transition: color 160ms ease-out;
+  }
+  .nav__links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--power);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 200ms ease-out;
+  }
+  .nav__links a:hover { color: var(--power); }
+  .nav__links a:hover::after { transform: scaleX(1); }
+  .nav__ext {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: none;
+  }
+  .nav__lang {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--ink-faint);
+    border: 1px solid var(--steel-600);
+    padding: 5px 9px;
+    transition: border-color 160ms ease-out, color 160ms ease-out;
+  }
+  .nav__lang:hover {
+    border-color: var(--power);
+    color: var(--power);
+  }
+
+  .hero {
+    position: relative;
+    padding: 168px 0 92px;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 55% 48% at 78% 6%, rgba(255, 176, 32, 0.07), transparent 70%),
+      radial-gradient(ellipse 42% 38% at 2% 30%, rgba(53, 224, 240, 0.05), transparent 70%);
+    pointer-events: none;
+  }
+  .hero__grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: 0.92fr 1.08fr;
+    gap: 52px;
+    align-items: center;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 6px 13px;
+    border: 1px solid var(--warn);
+    background: rgba(255, 157, 46, 0.06);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    color: var(--warn);
+    clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+  }
+  .badge__led {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--warn);
+    box-shadow: 0 0 8px var(--warn);
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  .hero__title {
+    margin-top: 22px;
+    font-size: clamp(30px, 4.2vw, 48px);
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .hero__title-line {
+    display: block;
+    margin-bottom: 4px;
+  }
+  .hero__title-accent {
+    position: relative;
+    color: var(--power);
+    white-space: nowrap;
+  }
+  .hero__title-accent::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2px;
+    height: 8px;
+    background: rgba(255, 176, 32, 0.16);
+    z-index: -1;
+    clip-path: polygon(0 2px, 100% 0, 100% 100%, 0 100%);
+  }
+  .hero__sub {
+    margin-top: 22px;
+    max-width: 56ch;
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--ink-dim);
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 13px;
+    margin-top: 30px;
+  }
+  .hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin: 38px 0 0;
+    padding: 20px 0 0;
+    border-top: 1px dashed var(--steel-600);
+    list-style: none;
+  }
+  .hero__meta li {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .hero__meta-k {
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+  }
+
+  .hero__map {
+    position: relative;
+  }
+  .hero__map-body {
+    padding: 26px 26px 20px;
+  }
+  .hero__map-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 26px 20px;
+    border-top: 1px dashed var(--steel-600);
+  }
+  .hero__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+  }
+  .hero__legend li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .hero__legend-i {
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--data);
+    background: rgba(53, 224, 240, 0.18);
+  }
+  .hero__legend-i[data-c="power"] { border-color: var(--power); background: rgba(255, 176, 32, 0.18); }
+  .hero__legend-i[data-c="ok"] { border-color: var(--ok); background: rgba(102, 224, 122, 0.18); }
+  .hero__map-note {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 980px) {
+    .hero__grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+  @media (max-width: 880px) {
+    .nav__links { display: none; }
+  }
+  @media (max-width: 560px) {
+    .hero { padding: 146px 0 64px; }
+    .hero__meta { gap: 20px; }
+    .hero__map-body { padding: 18px 16px 14px; }
+    .hero__map-foot { padding: 12px 16px 16px; }
+  }
+</style>

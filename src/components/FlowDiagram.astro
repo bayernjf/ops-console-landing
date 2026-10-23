@@ -1,0 +1,282 @@
+---
+// FlowDiagram — the approval pipeline this workbench exists to serve:
+// webhook card → deep link → human decision in the workbench → upstream
+// execution. Two cross-cutting rails below: the zeus /approval channel agents
+// wait on, and the console failure boundary. Human labels are localized;
+// tags, grades and codes stay fixed in both locales.
+import { useTranslations, getLangFromUrl } from "../i18n";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+
+const stages = [
+  {
+    key: "s1",
+    led: "data",
+    blocks: [{ tag: "IM CARD", name: t("flow.s1.name"), sub: t("flow.s1.sub") }],
+  },
+  {
+    key: "s2",
+    led: "data",
+    blocks: [{ tag: "DEEP LINK", name: t("flow.s2.name"), sub: t("flow.s2.sub") }],
+  },
+  {
+    key: "s3",
+    led: "power",
+    blocks: [{ tag: "HUMAN DECISION", name: t("flow.s3.name"), sub: t("flow.s3.sub"), core: true }],
+  },
+  {
+    key: "s4",
+    led: "ok",
+    blocks: [{ tag: "UPSTREAM API", name: t("flow.s4.name"), sub: t("flow.s4.sub") }],
+  },
+];
+---
+
+<div class="flow">
+  <div class="flow__stages">
+    {stages.map((stage, i) => (
+      <div class="flow__stage-wrap">
+        <div class={`flow__stage${stage.blocks[0].core ? " flow__stage--core" : ""}`}>
+          <div class="flow__stage-head">
+            <span class="flow__stage-led" data-c={stage.led} />
+            <span class="flow__stage-tag">{t(`flow.${stage.key}.tag`)}</span>
+            <span class="flow__stage-sub">{stage.blocks[0].sub}</span>
+          </div>
+          <div class="flow__blocks">
+            {stage.blocks.map((b) => (
+              <div class={`flow__block${b.core ? " flow__block--core" : ""}`}>
+                <span class="flow__block-tag">{b.tag}</span>
+                <span class="flow__block-name">{b.name}</span>
+                <span class="flow__block-pip" aria-hidden="true" />
+              </div>
+            ))}
+          </div>
+        </div>
+        {i < stages.length - 1 && (
+          <svg class="flow__down" width="16" height="18" viewBox="0 0 16 18" fill="none" aria-hidden="true">
+            <path d="M8 0v14m-5-5 5 5 5-5" stroke="var(--data)" stroke-width="1.5" />
+          </svg>
+        )}
+      </div>
+    ))}
+  </div>
+
+  <div class="flow__bottom">
+    <div class="flow__rail">
+      <div class="flow__rail-head">
+        <span class="led" data-c="power" aria-hidden="true" />
+        <span class="flow__rail-title">{t("flow.rail.approval")}</span>
+        <span class="flow__rail-sub">{t("flow.rail.approvalSub")}</span>
+      </div>
+      <div class="flow__codes">
+        <div class="flow__code"><i class="dot" data-c="power" /><code>D2/D3 held&nbsp;&nbsp;423 → approve / reject → result flows back</code></div>
+        <div class="flow__code"><i class="dot" data-c="data" /><code>workbench polls the queue every 20s while open</code></div>
+      </div>
+    </div>
+
+    <div class="flow__rail">
+      <div class="flow__rail-head">
+        <span class="led" data-c="data" aria-hidden="true" />
+        <span class="flow__rail-title">{t("flow.rail.ui")}</span>
+        <span class="flow__rail-sub">{t("flow.rail.uiSub")}</span>
+      </div>
+      <div class="flow__codes">
+        <div class="flow__code"><i class="dot" data-c="data" /><code>browser holds only an HMAC cookie — zero upstream keys</code></div>
+        <div class="flow__code"><i class="dot" data-c="ok" /><code>console stopped&nbsp;&nbsp;zeus &amp; commerce APIs keep running</code></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .flow__stages {
+    display: flex;
+    flex-direction: column;
+  }
+  .flow__stage-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .flow__stage {
+    width: 100%;
+    border: 1px solid var(--steel-600);
+    background: var(--steel-900);
+    box-shadow: var(--bevel-deep);
+  }
+  .flow__stage--core {
+    border-color: var(--power-dim);
+  }
+  .flow__stage-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-bottom: 1px dashed var(--steel-600);
+  }
+  .flow__stage-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--ink);
+  }
+  .flow__stage-sub {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+  .flow__stage-led {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--data);
+    box-shadow: 0 0 8px var(--data);
+  }
+  .flow__stage-led[data-c="power"] { background: var(--power); box-shadow: 0 0 8px var(--power); }
+  .flow__stage-led[data-c="ok"] { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+
+  .flow__blocks {
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px 12px;
+  }
+  .flow__block {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 13px 12px 11px;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--steel-800), var(--steel-850));
+    border: 1px solid var(--steel-600);
+    box-shadow: var(--bevel);
+  }
+  .flow__block--core {
+    border-color: var(--power-dim);
+    background:
+      radial-gradient(ellipse 90% 120% at 50% 0%, rgba(255, 176, 32, 0.08), transparent 70%),
+      linear-gradient(180deg, var(--steel-800), var(--steel-850));
+  }
+  .flow__block-tag {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    color: var(--data);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .flow__block--core .flow__block-tag { color: var(--power); }
+  .flow__block-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .flow__block-pip {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 38%;
+    background: var(--data);
+    box-shadow: 0 0 8px var(--data);
+    opacity: 0.55;
+    animation: flow-sweep 3.6s linear infinite;
+  }
+  .flow__block--core .flow__block-pip { background: var(--power); box-shadow: 0 0 8px var(--power); }
+  @keyframes flow-sweep {
+    0% { left: 0; opacity: 0; }
+    15% { opacity: 0.8; }
+    85% { opacity: 0.8; }
+    100% { left: 62%; opacity: 0; }
+  }
+  .flow__down {
+    flex: none;
+    margin: 1px 0;
+  }
+
+  .flow__bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .flow__rail {
+    border: 1px solid var(--steel-600);
+    background: var(--steel-900);
+    box-shadow: var(--bevel-deep);
+  }
+  .flow__rail-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px dashed var(--steel-600);
+  }
+  .flow__rail-title {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .flow__rail-sub {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .flow__codes {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 9px 12px 10px;
+  }
+  .flow__code {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .flow__code code {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .flow__code .dot {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--data);
+    box-shadow: 0 0 8px currentColor;
+    color: var(--data);
+  }
+  .flow__code .dot[data-c="power"] { background: var(--power); color: var(--power); }
+  .flow__code .dot[data-c="ok"] { background: var(--ok); color: var(--ok); }
+
+  @media (max-width: 920px) {
+    .flow__blocks {
+      display: flex;
+      overflow-x: auto;
+      padding-bottom: 12px;
+    }
+    .flow__block {
+      flex: none;
+      width: 100%;
+    }
+    .flow__bottom {
+      grid-template-columns: 1fr;
+    }
+    .flow__rail-sub { display: none; }
+  }
+</style>

@@ -1,0 +1,114 @@
+---
+import {
+  SITE_URL,
+  SITE_NAME,
+  AUTHOR,
+  SOCIAL,
+  OG_IMAGE,
+  OG_IMAGE_SIZE,
+  BRAND_MARK,
+} from "../consts";
+import {
+  useTranslations,
+  getAltLangPath,
+  getOtherLang,
+  localizePath,
+  type Lang,
+} from "../i18n";
+
+interface Props {
+  lang: Lang;
+  url: URL;
+  /** Set by the legal pages; the landing pages fall back to the shared copy. */
+  title?: string;
+  description?: string;
+}
+
+const { lang, url, title: titleOverride, description: descriptionOverride } = Astro.props;
+const t = useTranslations(lang);
+
+const title = titleOverride ?? t("meta.title");
+const description = descriptionOverride ?? t("meta.description");
+const altLang = getOtherLang(lang);
+
+const abs = (path: string) => new URL(path, SITE_URL).href;
+
+const canonical = abs(url.pathname);
+const altUrl = abs(getAltLangPath(url, lang));
+const defaultUrl = abs(localizePath("/", "en"));
+const ogImage = abs(OG_IMAGE[lang]);
+
+const htmlLang = lang === "zh" ? "zh-CN" : "en-US";
+const hreflang = (l: Lang) => (l === "zh" ? "zh-CN" : "en");
+
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "Tier 0",
+      url: SITE_URL,
+      logo: abs(BRAND_MARK),
+      sameAs: [SOCIAL.github],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      name: SITE_NAME,
+      url: SITE_URL,
+      description,
+      inLanguage: htmlLang,
+      publisher: { "@id": `${SITE_URL}/#organization` },
+    },
+    {
+      "@type": "SoftwareApplication",
+      name: SITE_NAME,
+      url: SITE_URL,
+      description,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      inLanguage: htmlLang,
+      author: { "@type": "Person", name: AUTHOR },
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      featureList: [
+        "Internal post-login operations console for the Tier 0 product family",
+        "Single environment password plus HMAC-signed cookie; owner/operator RBAC",
+        "No user table, no registration, no upstream keys in the browser",
+        "D1–D3 approval workbench (approve/reject) wired to the zeus /approval endpoint",
+        "20s polling while the approval queue is open",
+        "Read-only business dashboard reusing the commerce dashboard; no cost data",
+        "Webhook card notifications with approval deep links; IM notifies only",
+        "Controlled writes: D3 listing changes owner-only, D2 refunds both roles, all via commerce endpoints",
+        "Single-process Astro 7 SSR (node standalone) with React 19 islands; tokens server-side only",
+        "M8 local build green (Vitest 40/40, astro check 0 errors, verify-batch1 29/0, notify OK, verify-batch2 21/0); GATE-M8 not passed and never claimed as live",
+      ],
+    },
+  ],
+};
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+<link rel="alternate" hreflang={hreflang(lang)} href={canonical} />
+<link rel="alternate" hreflang={hreflang(altLang)} href={altUrl} />
+<link rel="alternate" hreflang="x-default" href={defaultUrl} />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={SITE_NAME} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content={lang === "zh" ? "zh_CN" : "en_US"} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content={String(OG_IMAGE_SIZE.width)} />
+<meta property="og:image:height" content={String(OG_IMAGE_SIZE.height)} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} is:inline />

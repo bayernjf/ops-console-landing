@@ -1,7 +1,8 @@
 # handoff — ops-console-landing
 
 Date: 2026-10-24
-Repo: `/Users/jiangfeng/000mycodes/ops-console-landing/` (independent git repo, branch `main`, **no remote added, nothing pushed**)
+Repo: `/Users/jiangfeng/000mycodes/ops-console-landing/` (independent git repo, branch `main`)
+**Published: public repo https://github.com/bayernjf/ops-console-landing — see Round 3.**
 
 ## What was built
 
@@ -12,7 +13,7 @@ introduction page. Stack mirrors tier0-landing exactly: Astro 7 `output: 'static
 @astrojs/react 5 + React 19, @astrojs/sitemap, `@bay/landing-ui@github:bayernjf/landing-ui#v1.5.0`,
 native CSS tokens.
 
-## Commit sequence (18, English conventional commits, no AI trailer)
+## Commit sequence (20, English conventional commits, no AI trailer)
 
 | # | hash | subject |
 |---|------|---------|
@@ -31,8 +32,7 @@ native CSS tokens.
 | 13 | 6d9d9b9 | fix: type-safe stage definitions in flow diagram |
 | 14 | 040f5ac | fix: mobile grid track overflow from nowrap flow codes |
 | 15 | 801a4f9 | docs: README and AGENTS with dev and deployment instructions |
-
-(handoff.md itself is this final commit — round 2 entry below.)
+| 16 | 7c6d5bf | docs: handoff report (initial round-1 entry) |
 
 ## Round 2 — independent-verification follow-up (2026-10-24, second pass)
 
@@ -41,9 +41,9 @@ NEW atomic commits (no history amended):
 
 | # | hash | subject |
 |---|------|---------|
-| 16 | aa3bda3 | fix: constrain hero grid tracks so flow panel cannot overflow viewport |
-| 17 | 39029df | fix: scroll-margin-top on anchored sections below fixed header |
-| 18 | (this commit) | docs: handoff report — round 2 verification results |
+| 17 | aa3bda3 | fix: constrain hero grid tracks so flow panel cannot overflow viewport |
+| 18 | 39029df | fix: scroll-margin-top on anchored sections below fixed header |
+| 19 | 65cd3a3 | docs: handoff report — round 2 verification results |
 
 **D1 — desktop hero panel clip (fixed).** Cause: `.hero__grid` used
 `0.92fr 1.08fr`, which resolves as `minmax(auto, …)`; the flow panel's min-content
@@ -86,8 +86,33 @@ global.css (fixed header = 34px HUD + 58px nav = 92px, +16px breathing).
   permissive, not prohibitive.
 - N1 — zh hreflang without trailing slash: left as-is, standard Astro
   `trailingSlash: 'ignore'` behavior shared with the family landings.
-- The verifier's scratch directory `verify-shots/` remains untracked in the working tree
-  and is deliberately not committed.
+- The verifier's scratch directory `verify-shots/` was removed by the orchestrator before
+  publishing (it was always untracked, never committed).
+
+## Round 3 — full-history secret scan and public release (orchestrator)
+
+Pre-push secret scan (run independently by the orchestrator, full history):
+
+1. Forbidden path names over every object ever committed:
+   `git rev-list --all --objects | awk '{print $2}' | sort -u` scanned for
+   `\.env`, `data/`, `*.db`, `*.sqlite`, `*.jsonl`, `*.pem`, `*.key`, `*.p12`, `*.pfx`,
+   `id_rsa`, `credentials`, `secret`, `.netrc`, `.pgpass` → **NO FORBIDDEN PATHS**.
+2. Every unique blob in history (`git cat-file blob` over all `git rev-list --all --objects`
+   SHAs) scanned for `ghp_`, `github_pat_`, `gho_`, `AKIA`, `AIza`, `xox*`,
+   `-----BEGIN PRIVATE KEY-----`, `sk-`, `Bearer …`, and
+   `password|api_key|access_token|secret_key` assignments → **zero matches**.
+3. No `.env*` files on disk (outside node_modules); external hosts in tracked files are
+   only: `localhost`, `w3.org`, `schema.org`, `astro.build`, `bayjf.com`, `github.com`,
+   `tier0.bayjf.com`, and the placeholder `ops-console.bayjf.com` — no webhook endpoints,
+   no private/internal hosts.
+
+Release:
+- `gh repo create bayernjf/ops-console-landing --public --source=. --remote=origin
+  --description "Public static bilingual landing page for ops-console, the Tier0 internal
+  operations console. Built with Astro."` → https://github.com/bayernjf/ops-console-landing
+- `git push -u origin main` → success; remote `main` = local `main` (19 commits at push
+  time, then this handoff update).
+- Verified via `gh repo view`: visibility = **PUBLIC**, default branch = **main**.
 
 ## Round 1 — initial build results
 

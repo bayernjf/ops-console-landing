@@ -12,7 +12,7 @@ introduction page. Stack mirrors tier0-landing exactly: Astro 7 `output: 'static
 @astrojs/react 5 + React 19, @astrojs/sitemap, `@bay/landing-ui@github:bayernjf/landing-ui#v1.5.0`,
 native CSS tokens.
 
-## Commit sequence (15, English conventional commits, no AI trailer)
+## Commit sequence (18, English conventional commits, no AI trailer)
 
 | # | hash | subject |
 |---|------|---------|
@@ -32,7 +32,64 @@ native CSS tokens.
 | 14 | 040f5ac | fix: mobile grid track overflow from nowrap flow codes |
 | 15 | 801a4f9 | docs: README and AGENTS with dev and deployment instructions |
 
-(handoff.md itself is this final commit.)
+(handoff.md itself is this final commit — round 2 entry below.)
+
+## Round 2 — independent-verification follow-up (2026-10-24, second pass)
+
+The independent verify pass came back with no blockers but two fixes, both done as
+NEW atomic commits (no history amended):
+
+| # | hash | subject |
+|---|------|---------|
+| 16 | aa3bda3 | fix: constrain hero grid tracks so flow panel cannot overflow viewport |
+| 17 | 39029df | fix: scroll-margin-top on anchored sections below fixed header |
+| 18 | (this commit) | docs: handoff report — round 2 verification results |
+
+**D1 — desktop hero panel clip (fixed).** Cause: `.hero__grid` used
+`0.92fr 1.08fr`, which resolves as `minmax(auto, …)`; the flow panel's min-content
+(nowrap rail heads / block tags) forced the right track to ~884px, pushing the panel's
+border box to x≈1317, and `.hero{overflow:hidden}` clipped its right rivet and the
+"WEBHOOK → HUMAN → EXECUTE" tail at 1280px. Fix: both tracks are now
+`minmax(0, …)`, `min-width:0` on `.hero__copy`/`.hero__map`, `.flow__bottom` rails are
+`minmax(0,1fr)`, rail heads wrap and `.flow__rail-sub` may wrap instead of `nowrap`.
+The shell was not shrunk; internal content now wraps/elides instead of stretching tracks.
+
+**N2 — anchor landing (fixed).** Added `section[id]{scroll-margin-top:108px}` in
+global.css (fixed header = 34px HUD + 58px nav = 92px, +16px breathing).
+
+**Re-verification (all run by me, after rebuild):**
+- `npm run build` = exit 0, 7 pages + sitemap, OG images regenerated.
+- `npm run check` = **0 errors / 0 warnings / 0 hints**.
+- Element right-edge walk (every element, not scrollWidth; overflow contained in
+  self-scroll ancestors — the HUD strip — exempted):
+
+  | width | en `/` | zh `/zh/` |
+  |-------|--------|-----------|
+  | 1024  | CLEAN  | CLEAN     |
+  | 1280  | CLEAN  | CLEAN     |
+  | 1440  | CLEAN  | CLEAN     |
+  | 1536  | CLEAN  | CLEAN     |
+  | 390   | CLEAN  | CLEAN     |
+
+- Anchors: after jump, `#capabilities` / `#principles` / `#status` section top = **108px**
+  in both locales (header bottom = 92px); the visible h2 heading sits ~225px — fully
+  clear of the fixed header.
+- Fresh `shots/en-hero-desktop.png` + `shots/zh-hero-desktop.png` visually confirmed:
+  panel right border and rivet fully visible, "WEBHOOK → HUMAN → EXECUTE" tail fully
+  visible, no new wrapping regressions in the flow diagram. Full audit re-run:
+  brokenLinks / noEmoji / noZombieButtons / noMobileOverflow all PASS.
+
+**Decisions documented (no code change):**
+- D2 — footer "BayJF" credit link (shared `@bay/landing-ui` BayjfLink → https://bayjf.com):
+  confirmed family-standard (tier0-landing, zeus-landing, atlas-landing render the same
+  component). Kept as-is; the spec's "footer may keep only GitHub + family overview" is
+  permissive, not prohibitive.
+- N1 — zh hreflang without trailing slash: left as-is, standard Astro
+  `trailingSlash: 'ignore'` behavior shared with the family landings.
+- The verifier's scratch directory `verify-shots/` remains untracked in the working tree
+  and is deliberately not committed.
+
+## Round 1 — initial build results
 
 ## Build / check results
 

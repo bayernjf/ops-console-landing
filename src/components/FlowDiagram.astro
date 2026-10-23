@@ -12,21 +12,25 @@ const stages = [
   {
     key: "s1",
     led: "data",
+    core: false,
     blocks: [{ tag: "IM CARD", name: t("flow.s1.name"), sub: t("flow.s1.sub") }],
   },
   {
     key: "s2",
     led: "data",
+    core: false,
     blocks: [{ tag: "DEEP LINK", name: t("flow.s2.name"), sub: t("flow.s2.sub") }],
   },
   {
     key: "s3",
     led: "power",
-    blocks: [{ tag: "HUMAN DECISION", name: t("flow.s3.name"), sub: t("flow.s3.sub"), core: true }],
+    core: true,
+    blocks: [{ tag: "HUMAN DECISION", name: t("flow.s3.name"), sub: t("flow.s3.sub") }],
   },
   {
     key: "s4",
     led: "ok",
+    core: false,
     blocks: [{ tag: "UPSTREAM API", name: t("flow.s4.name"), sub: t("flow.s4.sub") }],
   },
 ];
@@ -36,15 +40,15 @@ const stages = [
   <div class="flow__stages">
     {stages.map((stage, i) => (
       <div class="flow__stage-wrap">
-        <div class={`flow__stage${stage.blocks[0].core ? " flow__stage--core" : ""}`}>
+        <div class={`flow__stage${stage.core ? " flow__stage--core" : ""}`}>
           <div class="flow__stage-head">
             <span class="flow__stage-led" data-c={stage.led} />
-            <span class="flow__stage-tag">{t(`flow.${stage.key}.tag`)}</span>
+            <span class="flow__stage-tag">{t(`flow.${stage.key}.tag` as any)}</span>
             <span class="flow__stage-sub">{stage.blocks[0].sub}</span>
           </div>
           <div class="flow__blocks">
             {stage.blocks.map((b) => (
-              <div class={`flow__block${b.core ? " flow__block--core" : ""}`}>
+              <div class={`flow__block${stage.core ? " flow__block--core" : ""}`}>
                 <span class="flow__block-tag">{b.tag}</span>
                 <span class="flow__block-name">{b.name}</span>
                 <span class="flow__block-pip" aria-hidden="true" />

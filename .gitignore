@@ -1,0 +1,11 @@
+dist/
+node_modules/
+.astro/
+.claude/
+.DS_Store
+*.log
+.env
+.env.*
+data/
+*.db
+*.jsonl

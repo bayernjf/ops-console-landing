@@ -1,0 +1,237 @@
+---
+// Status — the honest gate state: M8 is locally complete and fully verified;
+// GATE-M8 is open behind external acceptance items. Milestone names are
+// localized; M-codes, test counts and status strings are machine readouts.
+import { useTranslations, getLangFromUrl } from "../i18n";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+
+const milestones = [
+  { id: "m8", state: "done" },
+  { id: "gate", state: "open" },
+];
+
+const board = [
+  { key: "local", led: "ok" },
+  { key: "live", led: "alert" },
+  { key: "webhook", led: "warn" },
+  { key: "auth", led: "warn" },
+  { key: "deploy", led: "alert" },
+];
+---
+
+<section id="status">
+  <div class="shell">
+    <span class="stencil">{t("status.stencil")}</span>
+    <h2 class="h-sec">{t("status.title")}</h2>
+    <p class="sub-sec">{t("status.sub")}</p>
+
+    <div class="status">
+      <ol class="timeline">
+        {milestones.map((m, i) => (
+          <li class={`timeline__item timeline__item--${m.state}`}>
+            <div class="timeline__rail">
+              <span class="timeline__dot" aria-hidden="true">
+                {m.state === "done" && (
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.2 4.8 9 10 3"/></svg>
+                )}
+                {m.state === "open" && (
+                  <svg width="8" height="9" viewBox="0 0 10 12" fill="currentColor" aria-hidden="true"><rect x="0.5" y="0.5" width="2.6" height="11" rx="0.6"/><rect x="6.9" y="0.5" width="2.6" height="11" rx="0.6"/></svg>
+                )}
+              </span>
+              {i < milestones.length - 1 && <span class="timeline__line" aria-hidden="true" />}
+            </div>
+            <div class="timeline__content">
+              <div class="timeline__head">
+                <span class="timeline__name">{t(`status.${m.id}.name` as any)}</span>
+                <span class={`timeline__state timeline__state--${m.state}`}>
+                  {m.state === "done" ? t("status.done") : t("status.open")}
+                </span>
+              </div>
+              <p class="timeline__desc">{t(`status.${m.id}.desc` as any)}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <div class="panel panel--riveted board">
+        <div class="panel__bar">
+          <span>{t("status.board.title")}</span>
+          <span class="led" data-c="warn" />
+        </div>
+        <ul class="board__list">
+          {board.map((b) => (
+            <li class="board__row">
+              <span class="board__led" data-c={b.led} />
+              <span class="board__name">{t(`status.board.${b.key}` as any)}</span>
+              <span class={`board__value board__value--${b.led}`}>{t(`status.board.${b.key}V` as any)}</span>
+            </li>
+          ))}
+        </ul>
+        <p class="board__note">{t("status.note")}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .status {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: 1.12fr 0.88fr;
+    gap: 22px;
+    align-items: start;
+  }
+
+  .timeline {
+    margin: 0;
+    padding: 4px 0;
+    list-style: none;
+  }
+  .timeline__item {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    column-gap: 16px;
+  }
+  .timeline__rail {
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+  .timeline__dot {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    margin-top: 4px;
+    border-radius: 50%;
+    border: 1.5px solid var(--steel-500);
+    background: var(--steel-900);
+    color: var(--steel-950);
+  }
+  .timeline__item--done .timeline__dot {
+    background: var(--ok);
+    border-color: var(--ok);
+    box-shadow: 0 0 12px -2px var(--ok);
+  }
+  .timeline__item--open .timeline__dot {
+    background: var(--warn);
+    border-color: var(--warn);
+    color: var(--steel-950);
+    box-shadow: 0 0 14px -1px var(--warn);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 10px -2px var(--warn); }
+    50% { box-shadow: 0 0 18px 0px var(--warn); }
+  }
+  .timeline__line {
+    position: absolute;
+    top: 19px;
+    bottom: -10px;
+    width: 2px;
+    background: repeating-linear-gradient(
+      180deg,
+      var(--steel-500) 0 6px,
+      transparent 6px 11px
+    );
+  }
+  .timeline__item--done .timeline__line {
+    background: var(--steel-600);
+  }
+  .timeline__content {
+    padding-bottom: 20px;
+  }
+  .timeline__item:last-child .timeline__content { padding-bottom: 0; }
+  .timeline__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .timeline__name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .timeline__state {
+    font-family: var(--mono);
+    font-size: 8.5px;
+    letter-spacing: 0.1em;
+    padding: 2px 7px;
+    border: 1px solid var(--steel-500);
+    color: var(--ink-faint);
+  }
+  .timeline__state--done {
+    color: var(--ok);
+    border-color: var(--ok);
+  }
+  .timeline__state--open {
+    color: var(--warn);
+    border-color: var(--warn);
+    box-shadow: 0 0 12px -4px var(--warn);
+  }
+  .timeline__desc {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-dim);
+    max-width: 56ch;
+  }
+
+  .board { overflow: hidden; }
+  .board__list {
+    margin: 0;
+    padding: 12px 20px 8px;
+    list-style: none;
+  }
+  .board__row {
+    display: grid;
+    grid-template-columns: 12px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--steel-700);
+  }
+  .board__row:last-child { border-bottom: none; }
+  .board__led {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--steel-500);
+  }
+  .board__led[data-c="ok"] { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+  .board__led[data-c="alert"] { background: var(--alert); box-shadow: 0 0 8px var(--alert); }
+  .board__led[data-c="warn"] { background: var(--warn); box-shadow: 0 0 8px var(--warn); }
+  .board__name {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-dim);
+  }
+  .board__value {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+    text-align: right;
+  }
+  .board__value--ok { color: var(--ok); }
+  .board__value--alert { color: var(--alert); }
+  .board__value--warn { color: var(--warn); }
+  .board__note {
+    padding: 14px 20px 18px;
+    border-top: 1px dashed var(--steel-600);
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.7;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 920px) {
+    .status { grid-template-columns: 1fr; }
+    .board__value { white-space: normal; }
+  }
+</style>

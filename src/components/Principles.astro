@@ -1,0 +1,126 @@
+---
+// Principles — the three design principles and the closing line.
+import { useTranslations, getLangFromUrl } from "../i18n";
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+
+const items = [
+  { n: "01", accent: "var(--data)", key: "1" },
+  { n: "02", accent: "var(--power)", key: "2" },
+  { n: "03", accent: "var(--plasma)", key: "3" },
+];
+---
+
+<section id="principles">
+  <div class="shell">
+    <span class="stencil">{t("principles.stencil")}</span>
+    <h2 class="h-sec">{t("principles.title")}</h2>
+
+    <div class="principles">
+      {items.map((it) => (
+        <article class="principles__card" style={`--accent:${it.accent}`}>
+          <div class="principles__head">
+            <span class="readout principles__n">{it.n}</span>
+            <span class="principles__pip" aria-hidden="true" />
+          </div>
+          <h3 class="principles__title">{t(`principles.${it.key}.title` as any)}</h3>
+          <p class="principles__body">{t(`principles.${it.key}.body` as any)}</p>
+        </article>
+      ))}
+    </div>
+
+    <p class="principles__close">
+      <span class="principles__close-mark" aria-hidden="true">HUMAN IN THE LOOP</span>
+      {t("principles.close")}
+    </p>
+  </div>
+</section>
+
+<style>
+  .principles {
+    margin: 46px 0 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .principles__card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 22px 24px;
+    background: linear-gradient(180deg, var(--steel-800), var(--steel-850));
+    border: 1px solid var(--steel-600);
+    border-top: 2px solid var(--accent);
+    box-shadow: var(--bevel);
+  }
+  .principles__head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 28px;
+  }
+  .principles__n {
+    position: relative;
+    z-index: 1;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    color: var(--accent);
+    background: var(--steel-900);
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 16px -4px var(--accent);
+  }
+  .principles__pip {
+    position: relative;
+    z-index: 1;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+  }
+  .principles__title {
+    margin-top: 16px;
+    font-family: var(--mono);
+    font-size: 14.5px;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+  }
+  .principles__body {
+    margin-top: 10px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-dim);
+  }
+
+  .principles__close {
+    position: relative;
+    margin: 40px auto 0;
+    max-width: 64ch;
+    padding: 20px 26px;
+    text-align: center;
+    font-size: 17px;
+    line-height: 1.7;
+    font-weight: 600;
+    color: var(--ink);
+    border: 1px solid var(--power-dim);
+    background:
+      radial-gradient(ellipse 70% 100% at 50% 0%, rgba(255, 176, 32, 0.06), transparent 75%),
+      var(--steel-900);
+    clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
+  }
+  .principles__close-mark {
+    display: block;
+    margin-bottom: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.24em;
+    color: var(--power);
+  }
+
+  @media (max-width: 900px) {
+    .principles { grid-template-columns: 1fr; }
+  }
+</style>

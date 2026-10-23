@@ -454,3 +454,8 @@ section {
     transform: none;
   }
 }
+
+/* anchored sections land below the fixed HUD (34px) + nav (58px) header */
+section[id] {
+  scroll-margin-top: 108px;
+}

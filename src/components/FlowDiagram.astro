@@ -209,7 +209,7 @@ const stages = [
 
   .flow__bottom {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 12px;
   }
   .flow__rail {
@@ -220,6 +220,8 @@ const stages = [
   .flow__rail-head {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    row-gap: 4px;
     gap: 8px;
     padding: 8px 12px;
     border-bottom: 1px dashed var(--steel-600);
@@ -235,7 +237,6 @@ const stages = [
     margin-left: auto;
     font-size: 11px;
     color: var(--ink-faint);
-    white-space: nowrap;
   }
   .flow__codes {
     display: flex;

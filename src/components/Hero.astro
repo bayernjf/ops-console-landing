@@ -201,10 +201,14 @@ const legend = [
   .hero__grid {
     position: relative;
     display: grid;
-    grid-template-columns: 0.92fr 1.08fr;
+    /* minmax(0, …) so neither track can resolve to the flow panel's
+       min-content width; inner content must wrap/clip, never stretch the grid */
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
     gap: 52px;
     align-items: center;
   }
+  .hero__copy,
+  .hero__map { min-width: 0; }
   .badge {
     display: inline-flex;
     align-items: center;
@@ -340,8 +344,6 @@ const legend = [
       grid-template-columns: minmax(0, 1fr);
       gap: 40px;
     }
-    .hero__copy,
-    .hero__map { min-width: 0; }
   }
   @media (max-width: 880px) {
     .nav__links { display: none; }
